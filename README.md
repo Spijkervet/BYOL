@@ -1,6 +1,14 @@
 # BYOL
 PyTorch implementation of "Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning" by J.B. Grill et al.
-Added support for PyTorch <= 1.5.0 and practical dataset implementation (CIFAR-10).
+
+- **Distributed Data Parallel training**
+- Benchmarks on vision datasets (CIFAR-10 / STL-10)
+- Support for PyTorch **<= 1.5.0**
+
+Open BYOL in Google Colab Notebook
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1B68Ag_oRB0-rbb9AwC20onmknxyYho4B?usp=sharing)
+
 
 ## Installation
 ```
