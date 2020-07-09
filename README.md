@@ -1,6 +1,9 @@
 # BYOL
 PyTorch implementation of "Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning" by J.B. Grill et al.
 
+[Link to paper](https://arxiv.org/abs/2006.07733)
+
+This repository includes a practical implementation of BYOL with:
 - **Distributed Data Parallel training**
 - Benchmarks on vision datasets (CIFAR-10 / STL-10)
 - Support for PyTorch **<= 1.5.0**
