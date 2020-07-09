@@ -1,4 +1,4 @@
-# BYOL
+# BYOL - Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning
 PyTorch implementation of "Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning" by J.B. Grill et al.
 
 [Link to paper](https://arxiv.org/abs/2006.07733)
