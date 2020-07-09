@@ -22,6 +22,7 @@ python3 main.py
 
 
 ## Usage
+### Pre-training
 To run pre-training using BYOL with the default arguments (1 node, 1 GPU), use:
 ```
 python3 main.py
@@ -31,6 +32,16 @@ Which is equivalent to:
 ```
 python3 main.py --nodes 1 --gpus 1
 ```
+
+The pre-trained models are saved ever *x* epochs in \*.pt files, the final model being `model-final.pt`
+
+### Finetuning
+Finetuning a logistic regression on top of the pre-trained, frozen ResNet model can be done using:
+```
+python3 logistic_regression.py --model_path=./model_final.pt
+```
+
+With `model_final.pt` being file containing the pre-trained network from the pre-training stage.
 
 ## Multi-GPU / Multi-node training
 Use `python3 main.py --gpus 2` to train e.g. on 2 GPU's, and `python3 main.py --gpus 2 --nodes 2` to train with 2 GPU's using 2 nodes.
