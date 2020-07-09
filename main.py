@@ -99,7 +99,7 @@ def main(gpu, args):
 
     # save your improved network
     if gpu == 0:
-        torch.save(resnet.state_dict(), "./improved-net.pt")
+        torch.save(resnet.state_dict(), "./model-final.pt")
 
     cleanup()
 
@@ -142,7 +142,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Master address for distributed data parallel
-    os.environ["MASTER_ADDR"] = "127.0.0.1"
+    os.environ["MASTER_ADDR"] = "146.50.28.70"
     os.environ["MASTER_PORT"] = "8010"
     args.world_size = args.gpus * args.nodes
+
+    # Initialize the process and join up with the other processes.
+    # This is “blocking,” meaning that no process will continue until all processes have joined.
     mp.spawn(main, args=(args,), nprocs=args.gpus, join=True)
