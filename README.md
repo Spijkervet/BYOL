@@ -12,4 +12,8 @@ python3 main.py
 
 ## Usage
 Define your training parameters in `flags.py`.
-Use `python3 main.py` to run pre-training using BYOL.
+Use `python3 main.py` to run pre-training using BYOL with the default arguments (1 node, 1 GPU)
+
+## Multi-GPU / Multi-node training
+Use `python3 main.py --gpus 2` to train e.g. on 2 GPU's, and `python3 main.py --gpus 2 --nodes 2` to train with 2 GPU's using 2 nodes.
+See https://yangkky.github.io/2019/07/08/distributed-pytorch-tutorial.html for an excellent explanation.
