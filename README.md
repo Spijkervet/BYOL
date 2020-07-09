@@ -36,7 +36,7 @@ python3 main.py --nodes 1 --gpus 1
 The pre-trained models are saved ever *x* epochs in \*.pt files, the final model being `model-final.pt`
 
 ### Finetuning
-Finetuning a logistic regression on top of the pre-trained, frozen ResNet model can be done using:
+Finetuning a model (linear evaluation') on top of the pre-trained, frozen ResNet model can be done using:
 ```
 python3 logistic_regression.py --model_path=./model_final.pt
 ```
