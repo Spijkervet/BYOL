@@ -11,7 +11,6 @@ python3 main.py
 
 
 ## Usage
-Define your training parameters in `flags.py`.
 Use `python3 main.py` to run pre-training using BYOL with the default arguments (1 node, 1 GPU)
 
 ## Multi-GPU / Multi-node training
