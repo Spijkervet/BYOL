@@ -47,7 +47,13 @@ def main(gpu, args):
     )
 
     # model
-    resnet = models.resnet50(pretrained=False)
+    if args.resnet_version == "resnet18":
+        resnet = models.resnet18(pretrained=False)
+    elif args.resnet_version == "resnet50":
+        resnet = models.resnet50(pretrained=False)
+    else:
+        raise NotImplementedError("ResNet not implemented")
+
     model = BYOL(resnet, image_size=args.image_size, hidden_layer="avgpool")
     model = model.cuda(gpu)
 
@@ -111,10 +117,13 @@ if __name__ == "__main__":
         "--learning_rate", default=3e-4, type=float, help="Initial learning rate."
     )
     parser.add_argument(
-        "--batch_size", default=42, type=int, help="Batch size for training."
+        "--batch_size", default=192, type=int, help="Batch size for training."
     )
     parser.add_argument(
         "--num_epochs", default=100, type=int, help="Number of epochs to train for."
+    )
+    parser.add_argument(
+        "--resnet_version", default="resnet18", type=str, help="ResNet version."
     )
     parser.add_argument(
         "--checkpoint_epochs",
