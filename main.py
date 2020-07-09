@@ -127,7 +127,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--checkpoint_epochs",
-        default=10,
+        default=5,
         type=int,
         help="Number of epochs between checkpoints/summaries.",
     )
