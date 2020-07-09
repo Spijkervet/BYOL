@@ -6,6 +6,7 @@ Added support for PyTorch <= 1.5.0 and practical dataset implementation (CIFAR-1
 ```
 git clone https://github.com/spijkervet/byol --recurse-submodules -j8
 pip3 install -r requirements.txt
+python3 main.py
 ```
 
 

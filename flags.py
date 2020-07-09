@@ -10,7 +10,7 @@ flags.DEFINE_integer("batch_size", 128, "Batch size for training.")
 flags.DEFINE_integer("num_epochs", 100, "Number of epochs to train for.")
 
 flags.DEFINE_integer(
-    "checkpoint_epochs", 1, "Number of epochs between checkpoints/summaries."
+    "checkpoint_epochs", 10, "Number of epochs between checkpoints/summaries."
 )
 
 flags.DEFINE_string("dataset_dir", "./datasets", "Directory where dataset is stored.")
