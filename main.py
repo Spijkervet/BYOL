@@ -1,86 +1,146 @@
+import os
+import argparse
 import torch
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import models, datasets
 import numpy as np
 from collections import defaultdict
-from absl import app
 
-from flags import flags
 from modules import BYOL
 from modules.transformations import TransformsSimCLR
 
+# distributed training
+import torch.distributed as dist
+import torch.multiprocessing as mp
+from torch.nn.parallel import DistributedDataParallel as DDP
 
-FLAGS = flags.FLAGS
 
-def main(argv):
-    if len(argv) > 1:
-        raise app.UsageError("Too many command-line arguments.")
-    
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    n_gpu = torch.cuda.device_count()
-    n_gpu = 1
+def cleanup():
+    dist.destroy_process_group()
+
+
+def main(gpu, args):
+    rank = args.nr * args.gpus + gpu
+    dist.init_process_group("nccl", rank=rank, world_size=args.world_size)
+
+    torch.manual_seed(0)
+    torch.cuda.set_device(gpu)
 
     # dataset
     train_dataset = datasets.CIFAR10(
-        FLAGS.dataset_dir,
+        args.dataset_dir,
         download=True,
-        transform=TransformsSimCLR(size=FLAGS.image_size),  # paper 224
+        transform=TransformsSimCLR(size=args.image_size), # paper 224
+    )
+
+    train_sampler = torch.utils.data.distributed.DistributedSampler(
+        train_dataset, num_replicas=args.world_size, rank=rank
     )
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
-        batch_size=FLAGS.batch_size,
+        batch_size=args.batch_size,
         drop_last=True,
-        num_workers=FLAGS.num_workers,
+        num_workers=args.num_workers,
+        pin_memory=True,
+        sampler=train_sampler,
     )
 
     # model
     resnet = models.resnet50(pretrained=False)
-    model = BYOL(resnet, image_size=FLAGS.image_size, hidden_layer="avgpool")
+    model = BYOL(resnet, image_size=args.image_size, hidden_layer="avgpool")
+    model = model.cuda(gpu)
 
-    print(f"Using {n_gpu} GPU's")
-    if n_gpu > 1:
-        model = torch.nn.DataParallel(model)
-    
-    model = model.to(device)
+    # distributed data parallel
+    model = DDP(model, device_ids=[gpu], find_unused_parameters=True)
 
     # optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=FLAGS.learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
     # TensorBoard writer
     writer = SummaryWriter()
 
     # solver
     global_step = 0
-    for epoch in range(FLAGS.num_epochs):
+    for epoch in range(args.num_epochs):
         metrics = defaultdict(list)
         for step, ((x_i, x_j), _) in enumerate(train_loader):
-            x_i = x_i.to(device)
-            x_j = x_j.to(device)
+            x_i = x_i.cuda(non_blocking=True)
+            x_j = x_j.cuda(non_blocking=True)
 
             loss = model(x_i, x_j)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            model.update_moving_average()  # update moving average of target encoder
+            model.module.update_moving_average()  # update moving average of target encoder
 
-            if step % 100 == 0:
+            if step % 1 == 0 and gpu == 0:
                 print(f"Step [{step}/{len(train_loader)}]:\tLoss: {loss.item()}")
-            
-            writer.add_scalar("Loss/train_step", loss, global_step)
-            metrics["Loss/train"].append(loss.item())
-            global_step += 1
 
-        # write metrics to TensorBoard
-        for k, v in metrics.items():
-            writer.add_scalar(k, np.array(v).mean(), epoch)
+            if gpu == 0:
+                writer.add_scalar("Loss/train_step", loss, global_step)
+                metrics["Loss/train"].append(loss.item())
+                global_step += 1
 
-        if epoch % FLAGS.checkpoint_epochs == 0:
-            torch.save(resnet.state_dict(), f"./model-{epoch}.pt")
+        if gpu == 0:
+            # write metrics to TensorBoard
+            for k, v in metrics.items():
+                writer.add_scalar(k, np.array(v).mean(), epoch)
+
+            if epoch % args.checkpoint_epochs == 0:
+                if gpu == 0:
+                    print(f"Saving model at epoch {epoch}")
+                    torch.save(resnet.state_dict(), f"./model-{epoch}.pt")
+
+                # let other workers wait until model is finished
+                # dist.barrier()
 
     # save your improved network
-    torch.save(resnet.state_dict(), "./improved-net.pt")
+    if gpu == 0:
+        torch.save(resnet.state_dict(), "./improved-net.pt")
+
+    cleanup()
 
 
 if __name__ == "__main__":
-    app.run(main)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--image_size", default=32, type=int, help="Image size")
+    parser.add_argument(
+        "--learning_rate", default=3e-4, type=float, help="Initial learning rate."
+    )
+    parser.add_argument(
+        "--batch_size", default=128, type=int, help="Batch size for training."
+    )
+    parser.add_argument(
+        "--num_epochs", default=100, type=int, help="Number of epochs to train for."
+    )
+    parser.add_argument(
+        "--checkpoint_epochs",
+        default=10,
+        type=int,
+        help="Number of epochs between checkpoints/summaries.",
+    )
+    parser.add_argument(
+        "--dataset_dir",
+        default="./datasets",
+        type=str,
+        help="Directory where dataset is stored.",
+    )
+    parser.add_argument(
+        "--num_workers",
+        default=8,
+        type=int,
+        help="Number of data loading workers (caution with nodes!)",
+    )
+    parser.add_argument(
+        "--nodes", default=1, type=int, help="Number of nodes",
+    )
+    parser.add_argument("--gpus", default=1, type=int, help="number of gpus per node")
+    parser.add_argument("--nr", default=0, type=int, help="ranking within the nodes")
+    args = parser.parse_args()
+
+    # Master address for distributed data parallel
+    os.environ["MASTER_ADDR"] = "127.0.0.1"
+    os.environ["MASTER_PORT"] = "8010"
+    args.world_size = args.gpus * args.nodes
+    mp.spawn(main, args=(args,), nprocs=args.gpus, join=True)
