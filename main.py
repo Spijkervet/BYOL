@@ -15,6 +15,8 @@ def main(argv):
         raise app.UsageError("Too many command-line arguments.")
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    n_gpu = torch.cuda.device_count()
+    n_gpu = 1
 
     # dataset
     train_dataset = datasets.CIFAR10(
@@ -32,11 +34,15 @@ def main(argv):
 
     # model
     resnet = models.resnet50(pretrained=False)
-    learner = BYOL(resnet, image_size=FLAGS.image_size, hidden_layer="avgpool")
-    learner = learner.to(device)
+    model = BYOL(resnet, image_size=FLAGS.image_size, hidden_layer="avgpool")
+
+    print(f"Using {n_gpu}'s")
+    if n_gpu > 1:
+        model = torch.nn.DataParallel(model)
+        model = model.to(device)
 
     # optimizer
-    optimizer = torch.optim.Adam(learner.parameters(), lr=FLAGS.learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr=FLAGS.learning_rate)
 
     # TensorBoard writer
     writer = SummaryWriter()
@@ -49,11 +55,11 @@ def main(argv):
             x_i = x_i.to(device)
             x_j = x_j.to(device)
 
-            loss = learner(x_i, x_j)
+            loss = model(x_i, x_j)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            learner.update_moving_average()  # update moving average of target encoder
+            model.update_moving_average()  # update moving average of target encoder
 
             if step % 100 == 0:
                 print(f"Step [{step}/{len(train_loader)}]:\tLoss: {loss.item()}")
