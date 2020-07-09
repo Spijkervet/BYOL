@@ -104,12 +104,12 @@ def main(gpu, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image_size", default=32, type=int, help="Image size")
+    parser.add_argument("--image_size", default=224, type=int, help="Image size")
     parser.add_argument(
         "--learning_rate", default=3e-4, type=float, help="Initial learning rate."
     )
     parser.add_argument(
-        "--batch_size", default=128, type=int, help="Batch size for training."
+        "--batch_size", default=42, type=int, help="Batch size for training."
     )
     parser.add_argument(
         "--num_epochs", default=100, type=int, help="Number of epochs to train for."
