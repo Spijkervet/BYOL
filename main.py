@@ -1,11 +1,13 @@
 import torch
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import models, datasets
-from modules import BYOL
-from modules.transformations import TransformsSimCLR
+import numpy as np
 from collections import defaultdict
 from absl import app
+
 from flags import flags
+from modules import BYOL
+from modules.transformations import TransformsSimCLR
 
 
 FLAGS = flags.FLAGS
@@ -36,10 +38,11 @@ def main(argv):
     resnet = models.resnet50(pretrained=False)
     model = BYOL(resnet, image_size=FLAGS.image_size, hidden_layer="avgpool")
 
-    print(f"Using {n_gpu}'s")
+    print(f"Using {n_gpu} GPU's")
     if n_gpu > 1:
         model = torch.nn.DataParallel(model)
-        model = model.to(device)
+    
+    model = model.to(device)
 
     # optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=FLAGS.learning_rate)
@@ -69,7 +72,7 @@ def main(argv):
             global_step += 1
 
         # write metrics to TensorBoard
-        for k, v in metrics:
+        for k, v in metrics.items():
             writer.add_scalar(k, np.array(v).mean(), epoch)
 
         if epoch % FLAGS.checkpoint_epochs == 0:
