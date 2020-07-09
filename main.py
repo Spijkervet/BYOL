@@ -58,7 +58,9 @@ def main(gpu, args):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
     # TensorBoard writer
-    writer = SummaryWriter()
+
+    if gpu == 0:
+        writer = SummaryWriter()
 
     # solver
     global_step = 0
