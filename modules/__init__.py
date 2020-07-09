@@ -1,1 +1,1 @@
-from .byol.byol_pytorch.byol_pytorch import BYOL
+from .byol import BYOL

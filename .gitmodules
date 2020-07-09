@@ -1,3 +1,0 @@
-[submodule "modules/byol"]
-	path = modules/byol
-	url = https://github.com/spijkervet/byol-pytorch
