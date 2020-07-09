@@ -11,7 +11,15 @@ python3 main.py
 
 
 ## Usage
-Use `python3 main.py` to run pre-training using BYOL with the default arguments (1 node, 1 GPU)
+To run pre-training using BYOL with the default arguments (1 node, 1 GPU), use:
+```
+python3 main.py
+```
+
+Which is equivalent to:
+```
+python3 main.py --nodes 1 --gpus 1
+```
 
 ## Multi-GPU / Multi-node training
 Use `python3 main.py --gpus 2` to train e.g. on 2 GPU's, and `python3 main.py --gpus 2 --nodes 2` to train with 2 GPU's using 2 nodes.
