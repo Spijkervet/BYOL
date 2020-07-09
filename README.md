@@ -33,7 +33,7 @@ Which is equivalent to:
 python3 main.py --nodes 1 --gpus 1
 ```
 
-The pre-trained models are saved ever *x* epochs in \*.pt files, the final model being `model-final.pt`
+The pre-trained models are saved every *n* epochs in \*.pt files, the final model being `model-final.pt`
 
 ### Finetuning
 Finetuning a model (linear evaluation') on top of the pre-trained, frozen ResNet model can be done using:
