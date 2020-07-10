@@ -25,6 +25,9 @@ if __name__ == "__main__":
         "--num_epochs", default=300, type=int, help="Number of epochs to train for."
     )
     parser.add_argument(
+        "--resnet_version", default="resnet18", type=str, help="ResNet version."
+    )
+    parser.add_argument(
         "--checkpoint_epochs",
         default=10,
         type=int,
@@ -75,8 +78,15 @@ if __name__ == "__main__":
     )
 
     # pre-trained model
-    resnet = models.resnet50()
-    resnet.load_state_dict(torch.load(args.model_path, map_location=device))
+    if args.resnet_version == "resnet18":
+        resnet = models.resnet18(pretrained=False)
+    elif args.resnet_version == "resnet50":
+        resnet = models.resnet50(pretrained=False)
+    else:
+        raise NotImplementedError("ResNet not implemented")
+
+
+    # resnet.load_state_dict(torch.load(args.model_path, map_location=device))
     resnet = resnet.to(device)
 
     num_features = list(resnet.children())[-1].in_features

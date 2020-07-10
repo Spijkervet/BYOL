@@ -29,6 +29,14 @@ Which is equivalent to:
 python3 main.py --nodes 1 --gpus 1
 ```
 
+### Results
+These are the top-1 accuracy of linear classifiers trained on the (frozen) representations learned by BYOL:
+
+| Method  | Batch size | Image size | ResNet | Projection output dim. | Pre-training epochs | Optimizer | STL-10 | CIFAR-10
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| BYOL + linear eval.  | 192 | 224x224 | ResNet18 | 256 | 100 | Adam | _ | **0.828** | 
+| Logistic Regression | - | - | - | - | - | - | 0.358 | 0.389 |
+
 ## Multi-GPU / Multi-node training
 Use `python3 main.py --gpus 2` to train e.g. on 2 GPU's, and `python3 main.py --gpus 2 --nodes 2` to train with 2 GPU's using 2 nodes.
 See https://yangkky.github.io/2019/07/08/distributed-pytorch-tutorial.html for an excellent explanation.
