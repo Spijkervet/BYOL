@@ -151,7 +151,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Master address for distributed data parallel
-    os.environ["MASTER_ADDR"] = "146.50.28.70"
+    os.environ["MASTER_ADDR"] = "127.0.0.1"
     os.environ["MASTER_PORT"] = "8010"
     args.world_size = args.gpus * args.nodes
 
