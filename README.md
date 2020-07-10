@@ -17,7 +17,7 @@ These are the top-1 accuracy of linear classifiers trained on the (frozen) repre
 
 | Method  | Batch size | Image size | ResNet | Projection output dim. | Pre-training epochs | Optimizer | STL-10 | CIFAR-10
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| BYOL + linear eval.  | 192 | 224x224 | ResNet18 | 256 | 100 | Adam | _ | **0.828** | 
+| BYOL + linear eval.  | 192 | 224x224 | ResNet18 | 256 | 100 | Adam | _ | **0.832** | 
 | Logistic Regression | - | - | - | - | - | - | 0.358 | 0.389 |
 
 
@@ -31,7 +31,7 @@ python3 main.py
 
 ## Usage
 ### Using a pre-trained model
-The following commands will train a logistic regression model on a pre-trained ResNet18, yielding a top-1 accuracy of 82.8% on CIFAR-10.
+The following commands will train a logistic regression model on a pre-trained ResNet18, yielding a top-1 accuracy of 83.2% on CIFAR-10.
 ```
 curl https://github.com/Spijkervet/BYOL/releases/download/1.0/resnet18-CIFAR10-final.pt -L -O
 rm features.p
