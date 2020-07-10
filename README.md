@@ -32,6 +32,7 @@ Which is equivalent to:
 ```
 python3 main.py --nodes 1 --gpus 1
 ```
+The pre-trained models are saved every *n* epochs in \*.pt files, the final model being `model-final.pt`
 
 ### Results
 These are the top-1 accuracy of linear classifiers trained on the (frozen) representations learned by BYOL:
@@ -40,7 +41,6 @@ These are the top-1 accuracy of linear classifiers trained on the (frozen) repre
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | BYOL + linear eval.  | 192 | 224x224 | ResNet18 | 256 | 100 | Adam | _ | **0.828** | 
 | Logistic Regression | - | - | - | - | - | - | 0.358 | 0.389 |
-The pre-trained models are saved every *n* epochs in \*.pt files, the final model being `model-final.pt`
 
 ### Finetuning
 Finetuning a model ('linear evaluation') on top of the pre-trained, frozen ResNet model can be done using:
