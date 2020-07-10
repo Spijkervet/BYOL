@@ -30,6 +30,14 @@ python3 main.py
 
 
 ## Usage
+### Using a pre-trained model
+The following commands will train a logistic regression model on a pre-trained ResNet18, yielding a top-1 accuracy of 82.8% on CIFAR-10.
+```
+curl https://github.com/Spijkervet/BYOL/releases/download/1.0/resnet18-CIFAR10-final.pt -L -O
+rm features.p
+python3 logistic_regression.py --model_path resnet18-CIFAR10-final.pt
+```
+
 ### Pre-training
 To run pre-training using BYOL with the default arguments (1 node, 1 GPU), use:
 ```
