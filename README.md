@@ -1,6 +1,9 @@
-# BYOL
+# BYOL - Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning
 PyTorch implementation of "Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning" by J.B. Grill et al.
 
+[Link to paper](https://arxiv.org/abs/2006.07733)
+
+This repository includes a practical implementation of BYOL with:
 - **Distributed Data Parallel training**
 - Benchmarks on vision datasets (CIFAR-10 / STL-10)
 - Support for PyTorch **<= 1.5.0**
@@ -19,6 +22,7 @@ python3 main.py
 
 
 ## Usage
+### Pre-training
 To run pre-training using BYOL with the default arguments (1 node, 1 GPU), use:
 ```
 python3 main.py
@@ -36,6 +40,15 @@ These are the top-1 accuracy of linear classifiers trained on the (frozen) repre
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | BYOL + linear eval.  | 192 | 224x224 | ResNet18 | 256 | 100 | Adam | _ | **0.828** | 
 | Logistic Regression | - | - | - | - | - | - | 0.358 | 0.389 |
+The pre-trained models are saved every *n* epochs in \*.pt files, the final model being `model-final.pt`
+
+### Finetuning
+Finetuning a model ('linear evaluation') on top of the pre-trained, frozen ResNet model can be done using:
+```
+python3 logistic_regression.py --model_path=./model_final.pt
+```
+
+With `model_final.pt` being file containing the pre-trained network from the pre-training stage.
 
 ## Multi-GPU / Multi-node training
 Use `python3 main.py --gpus 2` to train e.g. on 2 GPU's, and `python3 main.py --gpus 2 --nodes 2` to train with 2 GPU's using 2 nodes.
