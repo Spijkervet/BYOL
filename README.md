@@ -12,6 +12,14 @@ Open BYOL in Google Colab Notebook
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1B68Ag_oRB0-rbb9AwC20onmknxyYho4B?usp=sharing)
 
+## Results
+These are the top-1 accuracy of linear classifiers trained on the (frozen) representations learned by BYOL:
+
+| Method  | Batch size | Image size | ResNet | Projection output dim. | Pre-training epochs | Optimizer | STL-10 | CIFAR-10
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| BYOL + linear eval.  | 192 | 224x224 | ResNet18 | 256 | 100 | Adam | _ | **0.828** | 
+| Logistic Regression | - | - | - | - | - | - | 0.358 | 0.389 |
+
 
 ## Installation
 ```
@@ -34,14 +42,6 @@ python3 main.py --nodes 1 --gpus 1
 ```
 The pre-trained models are saved every *n* epochs in \*.pt files, the final model being `model-final.pt`
 
-### Results
-These are the top-1 accuracy of linear classifiers trained on the (frozen) representations learned by BYOL:
-
-| Method  | Batch size | Image size | ResNet | Projection output dim. | Pre-training epochs | Optimizer | STL-10 | CIFAR-10
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| BYOL + linear eval.  | 192 | 224x224 | ResNet18 | 256 | 100 | Adam | _ | **0.828** | 
-| Logistic Regression | - | - | - | - | - | - | 0.358 | 0.389 |
-
 ### Finetuning
 Finetuning a model ('linear evaluation') on top of the pre-trained, frozen ResNet model can be done using:
 ```
@@ -54,7 +54,7 @@ With `model_final.pt` being file containing the pre-trained network from the pre
 Use `python3 main.py --gpus 2` to train e.g. on 2 GPU's, and `python3 main.py --gpus 2 --nodes 2` to train with 2 GPU's using 2 nodes.
 See https://yangkky.github.io/2019/07/08/distributed-pytorch-tutorial.html for an excellent explanation.
 
-### Arguments
+## Arguments
 ```
 --image_size, default=224, "Image size"
 --learning_rate, default=3e-4, "Initial learning rate."
