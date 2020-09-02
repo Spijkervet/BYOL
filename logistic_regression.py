@@ -86,7 +86,7 @@ if __name__ == "__main__":
         raise NotImplementedError("ResNet not implemented")
 
 
-    # resnet.load_state_dict(torch.load(args.model_path, map_location=device))
+    resnet.load_state_dict(torch.load(args.model_path, map_location=device))
     resnet = resnet.to(device)
 
     num_features = list(resnet.children())[-1].in_features
