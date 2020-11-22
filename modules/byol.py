@@ -179,7 +179,6 @@ class BYOL(nn.Module):
         hidden_layer=-2,
         projection_size=256,
         projection_hidden_size=4096,
-        augment_fn=None,
         moving_average_decay=0.99,
     ):
         super().__init__()
